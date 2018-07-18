@@ -20,10 +20,11 @@ import keithley_control as kc
 
 class Keithley_GUI(QtGui.QMainWindow):
 
-    def __init__(self, port, connected=True)):
-        super(Example, self).__init__()
+    def __init__(self, port, connected=True):
+        super(Keithley_GUI, self).__init__()
+        print("hey")
 
-        self.initKeithley(port, connected=connected))
+        self.initKeithley(port, connected=connected)
         self.initUI()
 
     def initKeithley(self, port, connected):
