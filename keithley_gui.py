@@ -17,9 +17,10 @@ import sys, time
 from pyqtgraph import PlotWidget
 from pyqtgraph.Qt import QtGui, QtCore
 import keithley_control as kc
+import csv
+
 
 class Keithley_GUI(QtGui.QMainWindow):
-
     def __init__(self, port, connected=True):
         super(Keithley_GUI, self).__init__()
         print("hey")
@@ -32,7 +33,6 @@ class Keithley_GUI(QtGui.QMainWindow):
             self.keithley = kc.Keithley(port)
         else:
             self.keithley = kc.FakeKeithley()
-
 
     def initUI(self):
 
@@ -57,11 +57,10 @@ class Keithley_GUI(QtGui.QMainWindow):
         hbox.addWidget(self.output)
         grid.addLayout(hbox, 0, 0)
 
-
         # Make plotting area
-        red = (255,0,0)
-        green = (0,255,0)
-        blue = (0,0,255)
+        red = (255, 0, 0)
+        green = (0, 255, 0)
+        blue = (0, 0, 255)
         self.plotWidget1 = PlotWidget()
         self.a0 = self.plotWidget1.plot([], [], pen=blue)
         self.plotWidget2 = PlotWidget()
@@ -76,9 +75,14 @@ class Keithley_GUI(QtGui.QMainWindow):
         button.clicked.connect(self.buttonClicked)
         grid.addWidget(button, 0, 1)
 
+        # Trace data button
+        traceButton = QtGui.QPushButton("trace")
+        traceButton.clicked.connect(self.buttonClicked)
+        grid.addWidget(traceButton, 2, 1)
+
         #############  Trigger Field and Label #################
         self.num_trig = self.keithley.get_num_triggers()
-        self.trigLabel = QtGui.QLabel('Num Trigs: %s' %self.num_trig)
+        self.trigLabel = QtGui.QLabel('Num Trigs: %s' % self.num_trig)
         self.trigEdit = QtGui.QLineEdit()
         self.trigButton = QtGui.QPushButton('num_trigs')
         self.trigButton.clicked.connect(self.buttonClicked)
@@ -86,7 +90,6 @@ class Keithley_GUI(QtGui.QMainWindow):
         self.trigEdit.setSizePolicy(sizePolicy)
         grid.addWidget(self.trigLabel, 1, 0)
         grid.addWidget(self.trigEdit, 1, 1, 1, 1)
-
 
         ##############################################
         #############  Sweep Section #################
@@ -150,7 +153,6 @@ class Keithley_GUI(QtGui.QMainWindow):
         self.setWindowTitle('Keithley Controller')
         self.show()
 
-
     def buttonClicked(self):
 
         sender = self.sender()
@@ -160,28 +162,38 @@ class Keithley_GUI(QtGui.QMainWindow):
             self.keithley.run_start_up_commands()
             self.keithley.set_output_off()
             self.output.setCheckState(False)
-            self.trigLabel.setText('Num Trigs: %s' %1)
+            self.trigLabel.setText('Num Trigs: %s' % 1)
             self.statusBar().showMessage("Output Off")
 
         if sender.text() == "num_trigs":
             self.keithley.set_num_triggers(int(self.trigEdit.text()))
             response = self.keithley.get_num_triggers()
-            self.trigLabel.setText('Num Trigs: %s' %response)
+            self.trigLabel.setText('Num Trigs: %s' % response)
             self.trigEdit.setText('')
 
-         ######## Sweep Parameter Buttons ########
+            ######## Sweep Parameter Buttons ########
 
         if sender.text() == "Start Sweep!":
             start = int(self.startEdit.text())
             stop = int(self.stopEdit.text())
             step = float(self.stepEdit.text())
             num_sweeps = int(self.numSweepsEdit.text())
-            sweep_data = self.keithley.sweep(start=start,  stop=stop,
-                                        step=step, num_sweeps=num_sweeps)
+            sweep_data = self.keithley.sweep(start=start, stop=stop,
+                                             step=step, num_sweeps=num_sweeps)
             print(sweep_data[0])
             if sweep_data != None:
                 self.a0.setData(sweep_data[0], sweep_data[1])
                 self.a1.setData(sweep_data[1], sweep_data[2])
+
+        if sender.text() == "trace":
+            trace_data = kc.better_parsing(self.keithley.trace_data())
+            print(trace_data)
+            # trace_data = trace_data.replace(' ', '').split(',')
+            csvfile = 'demonstration.csv'
+            with open(csvfile, "w") as output:
+                writer = csv.writer(output, lineterminator='\n')
+                writer.writerow(['Time', 'Volts', 'Amps'])
+                writer.writerows(zip(*trace_data))
 
     def toggleOutput(self, state):
 
@@ -195,15 +207,16 @@ class Keithley_GUI(QtGui.QMainWindow):
     def setTrig(self):
         self.keithley.set_num_triggers(int(self.trigEdit.text()))
         response = self.keithley.get_num_triggers()
-        self.trigLabel.setText('Num Trigs: %s' %response)
+        self.trigLabel.setText('Num Trigs: %s' % response)
         self.trigEdit.setText('')
 
     """  Make sure to close the serial connection before exit """
+
     def closeEvent(self, event):
 
         reply = QtGui.QMessageBox.question(self, 'Message',
-            "Are you sure to quit?", QtGui.QMessageBox.Yes |
-            QtGui.QMessageBox.No, QtGui.QMessageBox.No)
+                                           "Are you sure to quit?", QtGui.QMessageBox.Yes |
+                                           QtGui.QMessageBox.No, QtGui.QMessageBox.No)
 
         if reply == QtGui.QMessageBox.Yes:
             self.keithley.set_output_off()
@@ -214,14 +227,15 @@ class Keithley_GUI(QtGui.QMainWindow):
         else:
             event.ignore()
 
+
 if __name__ == '__main__':
 
     if len(sys.argv) > 1:
-        port = float(sys.argv[1])
+        port = sys.argv[1]  # str(sys.argv[1]) #float(sys.argv[1])#
     else:
         print("Need to specify port for the SourceMeter.")
         print("Something like: python keithley_gui.py port_for_keithley")
         sys.exit()
     app = QtGui.QApplication(sys.argv)
-    ex = Keithley_GUI(port, connected=False)  ##### CHANGE THIS TO TRUE!!!
+    ex = Keithley_GUI(port, connected=True)  ##### CHANGE THIS TO TRUE!!!
     sys.exit(app.exec_())

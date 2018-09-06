@@ -11,14 +11,15 @@ The keithley object that will manage the transmission of data and commands.
 author: T. Max Roberts
 """
 
+
 class Keithley:
     # It would be good to have a class variable that prevented the
     # creation of more than one keithley object at a time!
     # This is it, but currently it does nothing
-    keithleyExists = False
+    #    keithleyExists = False
 
     def __init__(self, port):
-        keithleyExists = True
+        #        keithleyExists = True
         self.ser = ks.start_serial(port=port)
         # Now run start up commands
         self.run_start_up_commands()
@@ -83,7 +84,7 @@ class Keithley:
                 voltage = -200
                 print("Voltage limits are  +/- 200 V")
             self.set_source_type('voltage')
-            self.send_command(':SOUR:VOLT %s' %voltage)
+            self.send_command(':SOUR:VOLT %s' % voltage)
         else:
             print("Bad voltage sent")
 
@@ -96,7 +97,7 @@ class Keithley:
                 current = -1
                 print("Current limits are  +/- 1 A")
             self.set_source_type('current')
-            self.send_command(':SOUR:CURR %s' %current)
+            self.send_command(':SOUR:CURR %s' % current)
         else:
             print("Bad current sent")
 
@@ -114,13 +115,13 @@ class Keithley:
 
     def set_sensor_range(self, sensor_type, sensor_range):
         sensor_type = self.set_sensor_type(sensor_type)
-        print("Sensor type set to %s" %sensor_type)
+        print("Sensor type set to %s" % sensor_type)
         if type(sensor_range) == int or type(sensor_range) == float:
-            order = int(('%.2E' %sensor_range)[5:])
+            order = int(('%.2E' % sensor_range)[5:])
             if sensor_type == 'voltage':
-                self.send_command(':SENS:VOLT:RANG 10E%s' %order)
+                self.send_command(':SENS:VOLT:RANG 10E%s' % order)
             elif sensor_type == 'current':
-                self.send_command(':SENS:CURR:RANG 10E%s' %order)
+                self.send_command(':SENS:CURR:RANG 10E%s' % order)
             else:
                 print("Shouldn't get here!")
         else:
@@ -128,17 +129,17 @@ class Keithley:
 
     def set_voltage_compliance(self, limit):
         if type(limit) == int or type(limit) == float:
-            coeff = float(('%.2E' %limit)[:3])
-            order = int(('%.2E' %limit)[5:])
-            self.send_command(':SENS:VOLT:PROT %sE%s' %(coeff, order))
+            coeff = float(('%.2E' % limit)[:3])
+            order = int(('%.2E' % limit)[5:])
+            self.send_command(':SENS:VOLT:PROT %sE%s' % (coeff, order))
         else:
             print("Bad compliance value sent.")
 
     def set_current_compliance(self, limit):
         if type(limit) == int or type(limit) == float:
-            coeff = float(('%.2E' %limit)[:3])
-            order = int(('%.2E' %limit)[5:])
-            self.send_command(':SENS:CURR:PROT %sE%s' %(coeff, order))
+            coeff = float(('%.2E' % limit)[:3])
+            order = int(('%.2E' % limit)[5:])
+            self.send_command(':SENS:CURR:PROT %sE%s' % (coeff, order))
         else:
             print("Bad compliance value sent.")
 
@@ -152,7 +153,7 @@ class Keithley:
                 print("Number of triggers must be between 1-2500")
                 print("Triggers set to 2500")
                 num = 2500
-            self.send_command(':TRIG:COUN %s' %num)
+            self.send_command(':TRIG:COUN %s' % num)
         else:
             print("Bad trigger value sent.")
 
@@ -181,9 +182,14 @@ class Keithley:
         self.send_command(':OUTP OFF')
         return parse_data(response, data_type=data_type)
 
+    # The command to read data from the trace buffer
+    def trace_data(self):
+        response = self.get_response(':TRACe:DATA?')  #
+        return response
+
     def sweep(self, data_type=None, start=-10, stop=10, step=1, num_sweeps=1):
-        sweep_points = (stop-start)/step
-        num_trigs = num_sweeps*sweep_points
+        sweep_points = (stop - start) / step
+        num_trigs = num_sweeps * sweep_points
         if data_type == None:
             self.send_command(':FORM:ELEM TIME, VOLT, CURR, RES')
         elif data_type.lower() == 'v':
@@ -200,11 +206,11 @@ class Keithley:
         time.sleep(.1)
         self.send_command(':SENS:CURR:PROT 0.5')
         time.sleep(.1)
-        self.send_command(':SOUR:VOLT:START %s' %start)
+        self.send_command(':SOUR:VOLT:START %s' % start)
         time.sleep(.1)
-        self.send_command(':SOUR:VOLT:STOP %s' %stop)
+        self.send_command(':SOUR:VOLT:STOP %s' % stop)
         time.sleep(.1)
-        self.send_command(':SOUR:VOLT:STEP %s' %step)
+        self.send_command(':SOUR:VOLT:STEP %s' % step)
         time.sleep(.1)
         self.send_command(':SOUR:VOLT:MODE SWE')
         time.sleep(.1)
@@ -212,9 +218,9 @@ class Keithley:
         time.sleep(.1)
         self.send_command(':SOUR:SWE:SPAC LIN')
         time.sleep(.1)
-        self.send_command(':SOUR:SWE:POIN %s' %sweep_points)
+        self.send_command(':SOUR:SWE:POIN %s' % sweep_points)
         time.sleep(.1)
-        self.send_command(':TRIG:COUN %s' %num_trigs)
+        self.send_command(':TRIG:COUN %s' % num_trigs)
         time.sleep(.1)
         self.send_command(':SOUR:DEL 0.1')
         time.sleep(.1)
@@ -237,6 +243,8 @@ KEYWORDS:
 data_type = 'v' returns only time and volts, 'c', only time and current,
 'r' only time and ohms.
 """
+
+
 def parse_data(data, data_type=None):
     # Clean up the strings, splits into list
     data = data.replace(' ', '').split(',')
@@ -246,20 +254,48 @@ def parse_data(data, data_type=None):
     else:
         cols = 4
     # NOTE If data is not returned in groups of "cols" this will drop elements!
-    data = zip(*[iter(data)]*cols)
+    data = zip(*[iter(data)] * cols)
     # Use an array as they can be indexed, and for type conversion
     data = np.array(data).astype(np.float)
     if data_type == None:
-        return np.array([data[:,3], data[:,0], data[:,1], data[:,2]])
+        return np.array([data[:, 3], data[:, 0], data[:, 1], data[:, 2]])
     elif data_type.lower() == 'v':
-        return np.array([data[:,1], data[:,0]])
+        return np.array([data[:, 1], data[:, 0]])
     elif data_type.lower() == 'c':
-        return np.array([data[:,2], data[:,0]])
+        return np.array([data[:, 2], data[:, 0]])
     elif data_type.lower() == 'r':
-        return np.array([data[:,3], data[:,0]])
+        return np.array([data[:, 3], data[:, 0]])
     else:
         print("Bad data_type given, returning full data set")
-        return np.array([data[:,3], data[:,0], data[:,1], data[:,2]])
+        return np.array([data[:, 3], data[:, 0], data[:, 1], data[:, 2]])
+
+
+def better_parsing(data, data_type=None):
+    # Clean up the strings, splits into list
+    data = data.replace(' ', '')
+    data = data.split(',')
+    # Reshape in sections
+    if data_type in ['v', 'c', 'r']:
+        cols = 2
+    else:
+        cols = 5
+    # NOTE If data is not returned in groups of "cols" this will drop elements!
+    data = zip(*[iter(data)] * cols)
+    # Use an array as they can be indexed, and for type conversion
+    # return data
+    data = np.array(data).astype(np.float)
+    if data_type == None:
+        return np.array([data[:, 3], data[:, 0], data[:, 1]])
+    elif data_type.lower() == 'v':
+        return np.array([data[:, 1], data[:, 0]])
+    elif data_type.lower() == 'c':
+        return np.array([data[:, 2], data[:, 0]])
+    elif data_type.lower() == 'r':
+        return np.array([data[:, 3], data[:, 0]])
+    else:
+        print("Bad data_type given, returning full data set")
+        return np.array([data[:, 3], data[:, 0], data[:, 1], data[:, 2]])
+
 
 """  Fast Settings  """
 start_up_commands = ["*RST",
@@ -278,9 +314,11 @@ start_up_commands = ["*RST",
                      ":SOUR:DELAY 0.0",
                      ":DISP:ENAB OFF"]
 
+
 class FakeKeithley(object):
     def __init__(self):
         for method in Keithley.__dict__:
             self.__dict__[method] = self.fake_method
+
     def fake_method(self, *arg, **kwarg):
         pass
