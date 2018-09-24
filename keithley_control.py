@@ -16,13 +16,22 @@ class Keithley:
     # It would be good to have a class variable that prevented the
     # creation of more than one keithley object at a time!
     # This is it, but currently it does nothing
-    #    keithleyExists = False
+    keithleyExists = False
 
     def __init__(self, port):
-        #        keithleyExists = True
-        self.ser = ks.start_serial(port=port)
-        # Now run start up commands
-        self.run_start_up_commands()
+        self.keithleyExists = True
+        try:
+            self.ser = ks.start_serial(port=port)
+        except:
+            print "serial connection failed"
+            self.ser = False
+        else:
+            self.ser=False
+        if self.ser == False:
+            self.keithleyExists = False
+        else:
+            # Now run start up commands
+            self.run_start_up_commands()
 
     def run_start_up_commands(self):
         for com in start_up_commands:

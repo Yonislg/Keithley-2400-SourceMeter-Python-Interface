@@ -29,9 +29,9 @@ def start_serial(port='/dev/tty.KeySerial1'):
         ser.setRTS(False)
 
         return ser
-    except:
+    except(SystemExit):
         print("Some went wrong...")
-
+        return False
 def write(ser, command):
     ser.write(command + '\r')
 
