@@ -96,7 +96,6 @@ class Keithley_GUI(QtGui.QMainWindow):
 
         if sender.text() == "Connect":
             self.initKeithley(self.connectPort.text())
-            time.sleep(.5)
             if self.keithley.keithleyExists == False:
                 QtGui.QMessageBox.warning(self,'Message',
                                           'Port name incorrect. Could not establish connection.',
@@ -104,6 +103,9 @@ class Keithley_GUI(QtGui.QMainWindow):
                 #Write a warning that there is no valid connection
                 del self.keithley
             else:
+                QtGui.QMessageBox.information(self,'Message',
+                                          'Connection successful!',
+                                          QtGui.QMessageBox.Ok)
                 print "Keithley Initialized"
 
         if sender.text() == "trace":
@@ -117,6 +119,9 @@ class Keithley_GUI(QtGui.QMainWindow):
                     writer = csv.writer(output, lineterminator='\n')
                     writer.writerow(['Time', 'Volts', 'Amps'])
                     writer.writerows(zip(*trace_data))
+                QtGui.QMessageBox.information(self, 'Message',
+                                              'Tracing complete!',
+                                              QtGui.QMessageBox.Ok)
             else:
                 print csvfile
                 QtGui.QMessageBox.warning(self,'Message',
