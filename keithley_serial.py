@@ -31,7 +31,7 @@ def start_serial(port='/dev/tty.KeySerial1'):
         return ser
     except(SystemExit):
         print("Some went wrong...")
-        return False
+
 def write(ser, command):
     ser.write(command + '\r')
 

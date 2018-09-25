@@ -14,7 +14,6 @@ author: Yonis le Grand
 """
 
 import sys, time
-from pyqtgraph import PlotWidget
 from pyqtgraph.Qt import QtGui, QtCore
 import keithley_control as kc
 import csv
@@ -61,7 +60,8 @@ class Keithley_GUI(QtGui.QMainWindow):
         grid.addWidget(connectButton, 0, 0)
 
         ### Connection Port ###
-        self.connectPort = QtGui.QLineEdit('')
+        self.connectPort = QtGui.QLineEdit('COM_PORT')
+        self.connectPort.returnPressed.connect(connectButton.click)
         grid.addWidget(self.connectPort, 0, 1)
 
         ### Trace data button ###
@@ -70,7 +70,7 @@ class Keithley_GUI(QtGui.QMainWindow):
         grid.addWidget(traceButton, 1, 0)
 
         ### Savefile name ###
-        self.saveFile = QtGui.QLineEdit('')
+        self.saveFile = QtGui.QLineEdit('desired_filename')
         self.saveFile.returnPressed.connect(traceButton.click)
         grid.addWidget(self.saveFile, 1, 1)
 
@@ -95,7 +95,8 @@ class Keithley_GUI(QtGui.QMainWindow):
         sender = self.sender()
 
         if sender.text() == "Connect":
-            self.initKeithley(self.connectPort, True)
+            self.initKeithley(self.connectPort.text())
+            time.sleep(.5)
             if self.keithley.keithleyExists == False:
                 QtGui.QMessageBox.warning(self,'Message',
                                           'Port name incorrect. Could not establish connection.',

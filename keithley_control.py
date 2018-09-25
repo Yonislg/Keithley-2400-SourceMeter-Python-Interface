@@ -22,12 +22,11 @@ class Keithley:
         self.keithleyExists = True
         try:
             self.ser = ks.start_serial(port=port)
+            self.succes = True
         except:
             print "serial connection failed"
-            self.ser = False
-        else:
-            self.ser=False
-        if self.ser == False:
+            self.succes = False
+        if self.succes == False:
             self.keithleyExists = False
         else:
             # Now run start up commands
