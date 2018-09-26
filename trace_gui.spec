@@ -23,7 +23,7 @@ exe = EXE(pyz,
           debug=False,
           strip=False,
           upx=True,
-          console=False , icon='C:\\Users\\Usuario\\PycharmProjects\\Keithley-2400-SourceMeter-Python-Interface\\langmuir_plasma_2xG_icon.ico')
+          console=False , icon='C:\\Users\\Usuario\\PycharmProjects\\langmuir_plasma_2xG_icon.ico')
 coll = COLLECT(exe,
                a.binaries,
                a.zipfiles,

@@ -60,7 +60,7 @@ class Keithley_GUI(QtGui.QMainWindow):
         grid.addWidget(connectButton, 0, 0)
 
         ### Connection Port ###
-        self.connectPort = QtGui.QLineEdit('COM_PORT')
+        self.connectPort = QtGui.QLineEdit("COM_PORT")
         self.connectPort.returnPressed.connect(connectButton.click)
         grid.addWidget(self.connectPort, 0, 1)
 
@@ -95,7 +95,7 @@ class Keithley_GUI(QtGui.QMainWindow):
         sender = self.sender()
 
         if sender.text() == "Connect":
-            self.initKeithley(self.connectPort.text())
+            self.initKeithley(str(self.connectPort.text()))
             if self.keithley.keithleyExists == False:
                 QtGui.QMessageBox.warning(self,'Message',
                                           'Port name incorrect. Could not establish connection.',

@@ -2,7 +2,7 @@
  False,
  False,
  True,
- 'C:\\Users\\Usuario\\PycharmProjects\\Keithley-2400-SourceMeter-Python-Interface\\langmuir_plasma_2xG_icon.ico',
+ 'C:\\Users\\Usuario\\PycharmProjects\\langmuir_plasma_2xG_icon.ico',
  None,
  False,
  False,
@@ -46,7 +46,7 @@
  [],
  False,
  False,
- 1537992107L,
+ 1537997723L,
  [('runw.exe',
    'C:\\Users\\Usuario\\Anaconda2\\lib\\site-packages\\PyInstaller\\bootloader\\Windows-64bit\\runw.exe',
    'EXECUTABLE')])
