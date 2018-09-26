@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-Keithley GUI
+Keithley Tracebuffer GUI
 
 This script runs a GUI to extract date from the
 trace buffer of the Keithley 2400 SourceMeter.
@@ -14,7 +14,7 @@ author: Yonis le Grand
 """
 
 import sys, time
-from pyqtgraph.Qt import QtGui, QtCore
+from PyQt4 import QtGui#, QtCore
 import keithley_control as kc
 import csv
 
@@ -138,11 +138,14 @@ class Keithley_GUI(QtGui.QMainWindow):
                                            QtGui.QMessageBox.No, QtGui.QMessageBox.No)
 
         if reply == QtGui.QMessageBox.Yes:
-            self.keithley.set_output_off()
-            time.sleep(.25)
-            self.keithley.close_serial()
-            time.sleep(.25)
-            event.accept()
+            try:
+                self.keithley.set_output_off()
+                time.sleep(.25)
+                self.keithley.close_serial()
+                time.sleep(.25)
+                event.accept()
+            except AttributeError:
+                event.accept()
         else:
             event.ignore()
 
