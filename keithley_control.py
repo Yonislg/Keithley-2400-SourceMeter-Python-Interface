@@ -3,7 +3,8 @@
 
 import time
 import keithley_serial as ks
-import numpy as np
+from numpy import array as narray
+from numpy import float as nfloat
 
 """
 The keithley object that will manage the transmission of data and commands.
@@ -265,18 +266,18 @@ def parse_data(data, data_type=None):
     # NOTE If data is not returned in groups of "cols" this will drop elements!
     data = zip(*[iter(data)] * cols)
     # Use an array as they can be indexed, and for type conversion
-    data = np.array(data).astype(np.float)
+    data = narray(data).astype(nfloat)
     if data_type == None:
-        return np.array([data[:, 3], data[:, 0], data[:, 1], data[:, 2]])
+        return narray([data[:, 3], data[:, 0], data[:, 1], data[:, 2]])
     elif data_type.lower() == 'v':
-        return np.array([data[:, 1], data[:, 0]])
+        return narray([data[:, 1], data[:, 0]])
     elif data_type.lower() == 'c':
-        return np.array([data[:, 2], data[:, 0]])
+        return narray([data[:, 2], data[:, 0]])
     elif data_type.lower() == 'r':
-        return np.array([data[:, 3], data[:, 0]])
+        return narray([data[:, 3], data[:, 0]])
     else:
         print("Bad data_type given, returning full data set")
-        return np.array([data[:, 3], data[:, 0], data[:, 1], data[:, 2]])
+        return narray([data[:, 3], data[:, 0], data[:, 1], data[:, 2]])
 
 
 def better_parsing(data, data_type=None):
@@ -292,18 +293,18 @@ def better_parsing(data, data_type=None):
     data = zip(*[iter(data)] * cols)
     # Use an array as they can be indexed, and for type conversion
     # return data
-    data = np.array(data).astype(np.float)
+    data = narray(data).astype(nfloat)
     if data_type == None:
-        return np.array([data[:, 3], data[:, 0], data[:, 1]])
+        return narray([data[:, 3], data[:, 0], data[:, 1]])
     elif data_type.lower() == 'v':
-        return np.array([data[:, 1], data[:, 0]])
+        return narray([data[:, 1], data[:, 0]])
     elif data_type.lower() == 'c':
-        return np.array([data[:, 2], data[:, 0]])
+        return narray([data[:, 2], data[:, 0]])
     elif data_type.lower() == 'r':
-        return np.array([data[:, 3], data[:, 0]])
+        return narray([data[:, 3], data[:, 0]])
     else:
         print("Bad data_type given, returning full data set")
-        return np.array([data[:, 3], data[:, 0], data[:, 1], data[:, 2]])
+        return narray([data[:, 3], data[:, 0], data[:, 1], data[:, 2]])
 
 
 """  Fast Settings  """

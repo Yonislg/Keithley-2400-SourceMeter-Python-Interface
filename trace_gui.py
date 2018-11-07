@@ -16,7 +16,7 @@ author: Yonis le Grand
 import sys, time
 from PyQt4 import QtGui#, QtCore
 import keithley_control as kc
-import csv
+from csv import writer as csvwriter
 
 class Keithley_GUI(QtGui.QMainWindow):
     connected = False
@@ -116,7 +116,7 @@ class Keithley_GUI(QtGui.QMainWindow):
                 trace_data = kc.better_parsing(self.keithley.trace_data())
                 print(trace_data)
                 with open(csvfile, "w") as output:
-                    writer = csv.writer(output, lineterminator='\n')
+                    writer = csvwriter(output, lineterminator='\n')
                     writer.writerow(['Time', 'Volts', 'Amps'])
                     writer.writerows(zip(*trace_data))
                 QtGui.QMessageBox.information(self, 'Message',
