@@ -1,2 +1,4 @@
 .keithley_control.py.swp
 .keithley_manual_control.py.swp
+build
+dist
